@@ -17,7 +17,7 @@ class TimelineFrame:
     time: float
     notes_by_instrument: Dict[int, List[NoteEvent]]
 
-def extract_timeline(pm: pretty_midi.PrettyMIDI) -> tuple[List[TimelineFrame], int, Dict[int, str]]:
+def extract_timeline(pm: pretty_midi.PrettyMIDI) -> tuple[List[TimelineFrame], Dict[int, str]]:
     # Étape 1 : rassembler tous les timestamps de début/fin de notes
     change_times = set()
     for instr in pm.instruments:
@@ -60,18 +60,11 @@ def extract_timeline(pm: pretty_midi.PrettyMIDI) -> tuple[List[TimelineFrame], i
             notes_by_instr[idx] = active_notes
         timeline.append(TimelineFrame(time=t, notes_by_instrument=notes_by_instr))
 
-    # Étape 4 : trouver le nombre max de notes simultanées
-    max_notes = max(
-        sum(len(notes) for notes in frame.notes_by_instrument.values())
-        for frame in timeline
-    )
-
-    return timeline, max_notes, instrument_colors
+    return timeline, instrument_colors
 
 if __name__ == "__main__":
     midi_path = 'bad_liar.mid'
     pm = pretty_midi.PrettyMIDI(midi_path)
-    timeline, max_notes, colors =  extract_timeline(pm)
-    print(f"Max notes simultanées : {max_notes}")
+    timeline, colors =  extract_timeline(pm)
     for i, frame in enumerate(timeline):
         print(f"Frame {i} : {frame}")
